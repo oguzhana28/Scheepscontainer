@@ -2,6 +2,7 @@
 class User extends CI_Model{
     function __construct() {
         $this->userTbl = 'users';
+        $this->boatTBL = 'ships';
     }
     /*
      * get rows from the users table
@@ -41,6 +42,13 @@ class User extends CI_Model{
         //return fetched data
         return $result;
     }
+    function getShips(){
+        $this->db->select('*');
+        $this->db->from('ships');
+        $query = $this->db->get();
+        $ships = $query->result_array();
+        return $ships;
+        }
     
     /*
      * Insert user information
@@ -63,6 +71,24 @@ class User extends CI_Model{
         }else{
             return false;
         }
+    }
+        public function insertBoat($data = array()) {
+        //add created and modified data if not include
+        
+        //insert user data to users table
+        $insert = $this->db->insert($this->boatTBL, $data);
+        
+        //return the status
+        if($insert){
+            return $this->db->insert_id();
+        }else{
+            return false;
+        }
+    }
+    
+    public function deleteBoat($d){
+        $this->db->where('id', $d);
+        $this->db->delete('ships');
     }
 
 }

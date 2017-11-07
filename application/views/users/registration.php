@@ -47,5 +47,5 @@
             <input type="submit" name="regisSubmit" class="btn-primary" value="Submit"/>
         </div>
     </form>
-    <p class="footInfo">Already have an account? <a href="<?php echo base_url(); ?>Users/login">Login here</a></p>              
+    <p class="footInfo">Already have an account? <a href="<?php echo base_url(); ?>index.php/Users/index">Login here</a></p>              
 </div>

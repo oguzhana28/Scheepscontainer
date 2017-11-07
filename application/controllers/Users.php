@@ -14,16 +14,16 @@ class Users extends CI_Controller {
      * User account information
      */
     public function account(){
-        $data = array();
+        $ships = array();
         if($this->session->userdata('isUserLoggedIn')){
-            $data['user'] = $this->user->getRows(array('id'=>$this->session->userdata('userId')));
+
+            $ships['ships'] = $this->user->getShips();
             //load the view
-            
             $this->load->view('templates/header');
-            $this->load->view('users/account', $data);
+            $this->load->view('users/account', $ships);
             $this->load->view('templates/footer');
         }else{
-            redirect('users/login');
+            redirect('users/account');
         }
     }
     
@@ -54,7 +54,7 @@ class Users extends CI_Controller {
                 if($checkLogin){
                     $this->session->set_userdata('isUserLoggedIn',TRUE);
                     $this->session->set_userdata('userId',$checkLogin['id']);
-                    redirect('users/account/');
+                    redirect('Users/account/');
                 }else{
                     $data['error_msg'] = 'Wrong email or password, please try again.';
                 }
@@ -89,7 +89,7 @@ class Users extends CI_Controller {
             if($this->form_validation->run() == true){
                 $insert = $this->user->insert($userData);
                 if($insert){
-                    $this->session->set_userdata('success_msg', 'Your registration was successfully. Please login to your account.');
+                    $this->session->set_flashdata('success_msg', 'Your registration was successfully. Please login to your account.');
                     redirect('Users/index');
                 }else{
                     $data['error_msg'] = 'Some problems occured, please try again.';
@@ -127,4 +127,43 @@ class Users extends CI_Controller {
             return TRUE;
         }
     }
+
+public function createNewBoat(){
+        if($this->input->post('boatSub')){
+     
+    $boatData = array(
+                'IMO-nummer' => strip_tags($this->input->post('IMO-nummer')),
+                'scheepsnaam' => strip_tags($this->input->post('scheepsnaam')),
+                'bouwjaar' => strip_tags($this->input->post('bouwjaar')),
+                'thuishaven' => strip_tags($this->input->post('thuishaven')),
+                'thuisland' => strip_tags($this->input->post('thuisland')),
+                'MMSI-nummer' => strip_tags($this->input->post('MMSI-nummer')),
+                'lengte_m' => strip_tags($this->input->post('lengte_m')),
+                'breedte_m' => strip_tags($this->input->post('breedte_m')),
+                'diepte' => strip_tags($this->input->post('diepte')),
+                'draagvermogen_ton' => strip_tags($this->input->post('draagvermogen_ton')),
+                'ruim_lengte_m' => strip_tags($this->input->post('ruim_lengte_m')),
+                'ruim_breedte_m' => strip_tags($this->input->post('ruim_breedte_m')),
+                'ruim_hoogte_m' => strip_tags($this->input->post('ruim_hoogte_m')),
+                'max_gevaarlijke_stoffen_x' => strip_tags($this->input->post('max_gevaarlijke_stoffen_x')),
+                'ruim_max_totaal_vloer_belasting_ton' => strip_tags($this->input->post('ruim_max_totaal_vloer_belasting_ton')),
+                'ruim_max_kolom_vloerbelasting_ton' => strip_tags($this->input->post('ruim_max_kolom_vloerbelasting_ton'))
+            );
+    $insertBoat = $this->user->insertBoat($boatData);
+            if($insertBoat){
+               redirect('index.php/Users/account');
+            }
+        }
+        $this->load->view('templates/header');
+        $this->load->view('boats/create');
+        $this->load->view('templates/footer');
+}
+public function deleteBoat($id){
+    $id = $id;
+    $deleted = $this->user->deleteBoat($id);
+    if($deleted){
+        header('index.php/Users/account');
+    }
+
+} 
 }
