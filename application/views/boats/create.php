@@ -1,4 +1,4 @@
-    <h2>User Registration</h2>
+    <h2>Boat creation</h2>
     <form action="" method="post">
         <div class="form-group">
             <input type="text" class="form-control" name="IMO-nummer" placeholder="IMO-nummer" required="" value="<?php echo !empty($boat['IMO-nummer'])?boat['IMO-nummer']:''; ?>">
@@ -67,8 +67,16 @@
             <input type="text" class="form-control" name="ruim_max_kolom_vloerbelasting_ton" placeholder="ruim_max_kolom_vloerbelasting_ton" required="" value="<?php echo !empty($boat['ruim_max_kolom_vloerbelasting_ton'])?$boat['ruim_max_kolom_vloerbelasting_ton']:''; ?>">
           <?php echo form_error('ruim_max_kolom_vloerbelasting_ton','<span class="help-block">','</span>'); ?>
         </div>
+                                                                                <div class="form-group">
+            <input type="text" class="form-control" name="from" placeholder="from" required="" value="<?php echo !empty($boat['from'])?$boat['from']:''; ?>">
+          <?php echo form_error('from','<span class="help-block">','</span>'); ?>
+        </div>
+                                                                                <div class="form-group">
+            <input type="text" class="form-control" name="to" placeholder="to" required="" value="<?php echo !empty($boat['to'])?$boat['to']:''; ?>">
+          <?php echo form_error('to','<span class="help-block">','</span>'); ?>
+        </div>
         <div class="form-group">
             <input type="submit" name="boatSub" class="btn-primary" value="Submit"/>
         </div>
-         <p class="footInfo">Go back <a href="<?php echo base_url(); ?>index.php/Users/account">Go back to the main menu</a></p>
+         <p class="footInfo">Go back <a href="<?php echo base_url(); ?>index.php/Users/ships">Go back to the main menu</a></p>
     </form>

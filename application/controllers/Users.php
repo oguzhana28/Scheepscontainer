@@ -13,17 +13,24 @@ class Users extends CI_Controller {
     /*
      * User account information
      */
-    public function account(){
+    public function ships(){
         $ships = array();
         if($this->session->userdata('isUserLoggedIn')){
-
+         if($this->session->userdata['user']['role'] == 'planner' || $this->session->userdata['user']['role'] == 'Vlootmanager' || $this->session->userdata['user']['role'] == 'Routeplanner'){
             $ships['ships'] = $this->user->getShips();
             //load the view
             $this->load->view('templates/header');
-            $this->load->view('users/account', $ships);
+            $this->load->view('users/ships', $ships);
             $this->load->view('templates/footer');
+            }else if($this->session->userdata['user']['role'] == 'admin'){
+            $this->load->view('templates/header');
+            $this->load->view('containers/containers');
+            $this->load->view('templates/footer');
+               }else if($this->session->userdata['user']['role'] == 'Routeplanner'){
+             
+         }
         }else{
-            redirect('users/account');
+            redirect('users/ships');
         }
     }
     
@@ -32,6 +39,7 @@ class Users extends CI_Controller {
      */
     public function index(){
         $data = array();
+        $checkLogin = array();
         if($this->session->userdata('success_msg')){
             $data['success_msg'] = $this->session->userdata('success_msg');
             $this->session->unset_userdata('success_msg');
@@ -51,19 +59,29 @@ class Users extends CI_Controller {
                     'status' => '1'
                 );
                 $checkLogin = $this->user->getRows($con);
+                
                 if($checkLogin){
                     $this->session->set_userdata('isUserLoggedIn',TRUE);
+                    $this->session->set_userdata('user',$checkLogin);
                     $this->session->set_userdata('userId',$checkLogin['id']);
-                    redirect('Users/account/');
+                    if($this->session->userdata['user']['role'] == 'planner' || 'Vlootmanager'){
+                    redirect('Users/ships/');
+                    }else if($this->session->userdata['user']['role'] == 'admin'){
+                        redirect('Users/containers/');
+                    }
                 }else{
                     $data['error_msg'] = 'Wrong email or password, please try again.';
                 }
             }
         }
+       
         //load the view
+        
         $this->load->view('templates/header');
         $this->load->view('users/login', $data);
         $this->load->view('templates/footer');
+     
+        
     }
     
     /*
@@ -130,7 +148,6 @@ class Users extends CI_Controller {
 
 public function createNewBoat(){
         if($this->input->post('boatSub')){
-     
     $boatData = array(
                 'IMO-nummer' => strip_tags($this->input->post('IMO-nummer')),
                 'scheepsnaam' => strip_tags($this->input->post('scheepsnaam')),
@@ -149,9 +166,13 @@ public function createNewBoat(){
                 'ruim_max_totaal_vloer_belasting_ton' => strip_tags($this->input->post('ruim_max_totaal_vloer_belasting_ton')),
                 'ruim_max_kolom_vloerbelasting_ton' => strip_tags($this->input->post('ruim_max_kolom_vloerbelasting_ton'))
             );
-    $insertBoat = $this->user->insertBoat($boatData);
+            $routeData =array(
+                'from' => strip_tags($this->input->post('from')),
+                'to' => strip_tags($this->input->post('to'))
+            );
+    $insertBoat = $this->user->insertBoat($boatData,$routeData);
             if($insertBoat){
-               redirect('index.php/Users/account');
+               redirect('index.php/Users/ships');
             }
         }
         $this->load->view('templates/header');
@@ -162,8 +183,44 @@ public function deleteBoat($id){
     $id = $id;
     $deleted = $this->user->deleteBoat($id);
     if($deleted){
-        header('index.php/Users/account');
+        header('index.php/Users/ships');
     }
 
 } 
+public function editBoat($id){
+    $ships = array();
+    $id = $id;
+    $ships['ships'] = $this->user->getDataBoat($id);
+    if($this->input->post('boatEditSub')){
+            $boatData = array(
+                'IMO-nummer' => strip_tags($this->input->post('IMO-nummer')),
+                'scheepsnaam' => strip_tags($this->input->post('scheepsnaam')),
+                'bouwjaar' => strip_tags($this->input->post('bouwjaar')),
+                'thuishaven' => strip_tags($this->input->post('thuishaven')),
+                'thuisland' => strip_tags($this->input->post('thuisland')),
+                'MMSI-nummer' => strip_tags($this->input->post('MMSI-nummer')),
+                'lengte_m' => strip_tags($this->input->post('lengte_m')),
+                'breedte_m' => strip_tags($this->input->post('breedte_m')),
+                'diepte' => strip_tags($this->input->post('diepte')),
+                'draagvermogen_ton' => strip_tags($this->input->post('draagvermogen_ton')),
+                'ruim_lengte_m' => strip_tags($this->input->post('ruim_lengte_m')),
+                'ruim_breedte_m' => strip_tags($this->input->post('ruim_breedte_m')),
+                'ruim_hoogte_m' => strip_tags($this->input->post('ruim_hoogte_m')),
+                'max_gevaarlijke_stoffen_x' => strip_tags($this->input->post('max_gevaarlijke_stoffen_x')),
+                'ruim_max_totaal_vloer_belasting_ton' => strip_tags($this->input->post('ruim_max_totaal_vloer_belasting_ton')),
+                'ruim_max_kolom_vloerbelasting_ton' => strip_tags($this->input->post('ruim_max_kolom_vloerbelasting_ton'))
+            );
+          $post = $this->user->updateBoat($id,$boatData);
+    }
+        $this->load->view('templates/header');
+        $this->load->view('boats/edit',$ships);
+        $this->load->view('templates/footer');
+
+}
+    public function containers(){
+            $this->load->view('templates/header');
+            $this->load->view('containers/containers');
+            $this->load->view('templates/footer');
+
+    }
 }

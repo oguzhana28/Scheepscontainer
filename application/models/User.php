@@ -2,7 +2,6 @@
 class User extends CI_Model{
     function __construct() {
         $this->userTbl = 'users';
-        $this->boatTBL = 'ships';
     }
     /*
      * get rows from the users table
@@ -38,13 +37,14 @@ class User extends CI_Model{
                 $result = ($query->num_rows() > 0)?$query->result_array():FALSE;
             }
         }
-
+        var_dump($result);
         //return fetched data
         return $result;
     }
     function getShips(){
         $this->db->select('*');
         $this->db->from('ships');
+        $this->db->join('routes', 'ships.id = routes.ship_id', 'left');
         $query = $this->db->get();
         $ships = $query->result_array();
         return $ships;
@@ -72,14 +72,15 @@ class User extends CI_Model{
             return false;
         }
     }
-        public function insertBoat($data = array()) {
+        public function insertBoat($data = array(),$route = array()) {
         //add created and modified data if not include
         
         //insert user data to users table
-        $insert = $this->db->insert($this->boatTBL, $data);
+        $insertBoat = $this->db->insert('ships', $data);
+        $insertRout = $this->db->insert('routes', $route);
         
         //return the status
-        if($insert){
+        if($insertBoat && $insertRout){
             return $this->db->insert_id();
         }else{
             return false;
@@ -89,6 +90,24 @@ class User extends CI_Model{
     public function deleteBoat($d){
         $this->db->where('id', $d);
         $this->db->delete('ships');
+    }
+    public function getDataBoat($d){
+        $this->db->select('*');
+        $this->db->from('ships');
+        $this->db->where('id' , $d);
+        $query = $this->db->get();
+        $boat = $query->result_array();
+        return $boat;
+        
+    }    
+    public function updateBoat($d , $POST){
+
+        $this->db->where('id' , $d);
+        $this->db->update('ships' , $POST);
+        $query = $this->db->get();
+        $boat = $query->result_array();
+        return $boat;
+        
     }
 
 }
